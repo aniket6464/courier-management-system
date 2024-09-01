@@ -6,6 +6,7 @@ import branchRouter from './routes/branchRouter.js'
 import staffRouter from './routes/staffRouter.js'
 import parcelRouter from './routes/parcelRouter.js'
 import adminRouter from './routes/adminRouter.js'
+import path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -15,6 +16,8 @@ mongoose.connect(process.env.MONGO)
 }).catch(err => {
   console.error('Error connecting to MongoDB', err);
 });
+
+const __dirname = path.resolve();
 
 // const password = 'adminpassword'; // Plain text password
 // const hashedPassword = bcryptjs.hashSync(password, 10); // Hashing the password with a cost factor of 10
@@ -57,6 +60,12 @@ app.use('/api/branch', branchRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/parcels', parcelRouter);
 app.use('/api/admin', adminRouter);
+
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+})
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
